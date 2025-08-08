@@ -18,8 +18,8 @@
  * --------------------------------------------------------------------
  * Parameters of the Theme chooser module
  *
- * File version: 1.0
- * Last update: 10/25/2024 
+ * File version: 1.1
+ * Last update: 08/08/2025 
  */
 
 /**
@@ -59,5 +59,5 @@ define('MOD_Z4M_THEMECHOOSER_SQL_SCRIPT_PATH', ZNETDK_MOD_ROOT
         . 'z4m_themechooser.sql');
 
 // VERSIONS
-define('MOD_Z4M_THEMECHOOSER_VERSION_NUMBER','1.0');
-define('MOD_Z4M_THEMECHOOSER_VERSION_DATE','2024-10-25');
+define('MOD_Z4M_THEMECHOOSER_VERSION_NUMBER','1.1');
+define('MOD_Z4M_THEMECHOOSER_VERSION_DATE','2025-08-08');

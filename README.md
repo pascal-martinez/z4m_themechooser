@@ -38,9 +38,9 @@ For example:
 /* Heading images */
 use z4m_themechooser\mod\controller\Users;
 if (Users::getUserTheme() === MOD_Z4M_THEMECHOOSER_CSS_DARK_THEME) {
-    define('LC_HEAD_IMG_LOGO', MOD_Z4M_THEMECHOOSER_LOGO_DARK_THEME);
+    define('LC_HEAD_IMG_LOGO', ZNETDK_ROOT_URI . MOD_Z4M_THEMECHOOSER_LOGO_DARK_THEME);
 } else {
-    define('LC_HEAD_IMG_LOGO', MOD_Z4M_THEMECHOOSER_LOGO_LIGHT_THEME);
+    define('LC_HEAD_IMG_LOGO', ZNETDK_ROOT_URI . MOD_Z4M_THEMECHOOSER_LOGO_LIGHT_THEME);
 }
 ```
 
