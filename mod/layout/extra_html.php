@@ -17,14 +17,26 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  * --------------------------------------------------------------------
  * Theme chooser module extra HTML code
- * 
- * File version: 1.0
- * Last update: 10/25/2024
+ *
+ * File version: 1.1
+ * Last update: 10/16/2025
  */
-if (CFG_PAGE_LAYOUT === 'mobile' && CFG_AUTHENT_REQUIRED === TRUE && UserSession::isAuthenticated(TRUE)) :
+use z4m_themechooser\mod\UserTheme;
+if (CFG_PAGE_LAYOUT === 'mobile') :
+    $initialThemeName = 'auto';
+    if (CFG_AUTHENT_REQUIRED === TRUE && UserSession::isAuthenticated(TRUE)) {
+        try {
+            $userTheme = new UserTheme();
+            $initialThemeName = $userTheme->getName();
+        } catch (\Exception $ex) {
+            General::writeErrorLog('z4m_themechooser/extra_html', $ex->getMessage());
+        }
+    }
     // Setting the $color $variable
     require 'z4m_themechooser/mod/view/fragment/color_scheme.php'; ?>
-        <div id="z4m-theme-chooser-extra-code" class="w3-hide">
+        <div id="z4m-theme-chooser-extra-code" class="w3-hide" data-theme="<?php echo $initialThemeName; ?>" data-isdebug="<?php echo CFG_DEV_JS_ENABLED ? '1' : '0'; ?>"
+             data-light='<?php echo UserTheme::getLightThemeJSONData(); ?>'
+             data-dark='<?php echo UserTheme::getDarkThemeJSONData(); ?>'>
             <button type="button" class="choosetheme w3-button <?php echo $color['btn_action']; ?> <?php echo $color['btn_hover']; ?> w3-block w3-section w3-padding"><i class="fa fa-television fa-lg"></i> <?php echo MOD_Z4M_THEMECHOOSER_USER_PANEL_BUTTON_LABEL; ?></button>
         </div>
 <?php endif;

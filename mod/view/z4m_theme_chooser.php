@@ -18,10 +18,11 @@
  * --------------------------------------------------------------------
  * Theme chooser view
  *
- * File version: 1.0
- * Last update: 10/25/2024
+ * File version: 1.1
+ * Last update: 10/13/2025
  */
 
+$isDarkThemeConfigured = z4m_themechooser\mod\UserTheme::isDarkThemeConfigured();
 // Setting the $color $variable
 require 'fragment/color_scheme.php';
 ?>
@@ -46,24 +47,18 @@ require 'fragment/color_scheme.php';
         <div class="w3-container w3-section">
             <form></form>
             <div class="w3-center">
-                <button class="select-theme w3-btn w3-border w3-hover-opacity"
-                        data-css="<?php echo CFG_MOBILE_W3CSS_THEME; ?>"
-                        data-fileversion="<?php echo filemtime(ZNETDK_ROOT . CFG_MOBILE_W3CSS_THEME); ?>"
-<?php if (defined('MOD_Z4M_THEMECHOOSER_LOGO_LIGHT_THEME') && MOD_Z4M_THEMECHOOSER_LOGO_LIGHT_THEME !== NULL) : ?>
-                        data-icon="<?php echo MOD_Z4M_THEMECHOOSER_LOGO_LIGHT_THEME; ?>"
+<?php if ($isDarkThemeConfigured) : ?>
+                <button class="select-theme w3-btn w3-border w3-light-gray w3-hover-opacity" data-theme="auto">
+                    <div class="fa fa-adjust fa-fw" style="font-size: 120px"></div>
+                    <div class="w3-margin-top w3-xlarge"><i class="fa fa-check w3-text-green"></i> <b><?php echo MOD_Z4M_THEMECHOOSER_MODAL_AUTO_THEME_LABEL; ?></b></div>
+                </button>
 <?php endif; ?>
-                        data-theme="light">
+                <button class="select-theme w3-btn w3-border w3-hover-opacity" data-theme="light">
                     <div class="fa fa-sun-o fa-fw" style="font-size: 120px"></div>
                     <div class="w3-margin-top w3-xlarge"><i class="fa fa-check w3-text-green"></i> <b><?php echo MOD_Z4M_THEMECHOOSER_MODAL_LIGHT_THEME_LABEL; ?></b></div>
                 </button>
-<?php if (defined('MOD_Z4M_THEMECHOOSER_CSS_DARK_THEME') && MOD_Z4M_THEMECHOOSER_CSS_DARK_THEME !== NULL) : ?>
-                <button class="select-theme w3-btn w3-border w3-black w3-hover-opacity"
-                        data-css="<?php echo MOD_Z4M_THEMECHOOSER_CSS_DARK_THEME; ?>"
-                        data-fileversion="<?php echo filemtime(ZNETDK_ROOT . MOD_Z4M_THEMECHOOSER_CSS_DARK_THEME); ?>"
-<?php if (defined('MOD_Z4M_THEMECHOOSER_LOGO_DARK_THEME') && MOD_Z4M_THEMECHOOSER_LOGO_DARK_THEME !== NULL) : ?>
-                        data-icon="<?php echo MOD_Z4M_THEMECHOOSER_LOGO_DARK_THEME; ?>"
-<?php endif; ?>
-                        data-theme="dark">
+<?php if ($isDarkThemeConfigured) : ?>
+                <button class="select-theme w3-btn w3-border w3-black w3-hover-opacity" data-theme="dark">
                     <div class="fa fa-moon-o fa-fw" style="font-size: 120px"></div>
                     <div class="w3-margin-top w3-xlarge"><i class="fa fa-check w3-text-green"></i> <b><?php echo MOD_Z4M_THEMECHOOSER_MODAL_DARK_THEME_LABEL; ?></b></div>
                 </button>

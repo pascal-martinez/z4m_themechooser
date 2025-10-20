@@ -18,12 +18,13 @@
  * --------------------------------------------------------------------
  * Theme chooser module french translations of the application
  * 
- * File version: 1.0
- * Last update: 10/25/2024
+ * File version: 1.1
+ * Last update: 10/13/2025
  */
 
-define ('MOD_Z4M_THEMECHOOSER_USER_PANEL_BUTTON_LABEL', 'Thème');
-define ('MOD_Z4M_THEMECHOOSER_MODAL_LIGHT_THEME_LABEL', 'Clair');
-define ('MOD_Z4M_THEMECHOOSER_MODAL_DARK_THEME_LABEL', 'Sombre');
-define ('MOD_Z4M_THEMECHOOSER_ACTION_STORE_OK', 'Préférence de thème enregistrée.');
-define ('MOD_Z4M_THEMECHOOSER_ACTION_STORE_ERROR', 'Echec d\'enregistrement du thème préféré.');
+define('MOD_Z4M_THEMECHOOSER_USER_PANEL_BUTTON_LABEL', 'Thème');
+define('MOD_Z4M_THEMECHOOSER_MODAL_AUTO_THEME_LABEL', 'Auto');
+define('MOD_Z4M_THEMECHOOSER_MODAL_LIGHT_THEME_LABEL', 'Clair');
+define('MOD_Z4M_THEMECHOOSER_MODAL_DARK_THEME_LABEL', 'Sombre');
+define('MOD_Z4M_THEMECHOOSER_ACTION_STORE_OK', 'Préférence de thème enregistrée.');
+define('MOD_Z4M_THEMECHOOSER_ACTION_STORE_ERROR', 'Echec d\'enregistrement du thème préféré.');

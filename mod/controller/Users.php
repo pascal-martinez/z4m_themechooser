@@ -18,39 +18,29 @@
  * --------------------------------------------------------------------
  * Theme chooser module application controller
  *
- * File version: 1.0
- * Last update: 10/25/2024
+ * File version: 1.1
+ * Last update: 10/15/2025
  */
 namespace z4m_themechooser\mod\controller;
+
+use \z4m_themechooser\mod\UserTheme;
 
 class Users extends \AppController {
 
     static public function getUserTheme() {
-        $theme = CFG_MOBILE_W3CSS_THEME;
-        $userId = \UserSession::getUserId();
         try {
-            $dao = new \SimpleDAO('zdk_user_themes');
-            if (!$dao->doesTableExist() && !Z4mThemeChooserCtrl::createModuleSqlTable()) {
-                throw new \Exception('SQL Table is missing and its creation failed.');
-            }            
-            $rows = $dao->getRowsForCondition('user_id = ?', $userId);
-            if (count($rows) > 0 && $rows[0]['theme_name'] === 'dark') {                
-                $theme = MOD_Z4M_THEMECHOOSER_CSS_DARK_THEME;
-            }
+            $userTheme = new UserTheme();
+            $themeName = $userTheme->getName();
         } catch (\Exception $ex) {
-            \General::writeErrorLog(__METHOD__, $ex->getMessage());
+            // User not logged in
+            $themeName = 'light';
         }
-        return $theme;
+        return $themeName === 'dark' ? MOD_Z4M_THEMECHOOSER_CSS_DARK_THEME
+                    : CFG_MOBILE_W3CSS_THEME;
     }
-    
+
     static public function onRemove($userId) {
-        $dao = new \SimpleDAO('zdk_user_themes');
-        if (!$dao->doesTableExist()) {
-            return;
-        }
-        $rows = $dao->getRowsForCondition('user_id = ?', $userId);
-        if (count($rows) > 0) {
-            $dao->remove(NULL, FALSE);
-        }
+        $userTheme = new UserTheme($userId);
+        $userTheme->remove(FALSE);
     }
 }

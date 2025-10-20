@@ -16,9 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * --------------------------------------------------------------------
  * Theme chooser module JS library
- * 
- * File version: 1.0
- * Last update: 10/25/2024
+ *
+ * File version: 1.1
+ * Last update: 10/19/2025
  */
 
 // Once the document is fully loaded
@@ -28,32 +28,92 @@ window.addEventListener("load", function() {
 
 /* global z4m */
 class Z4M_ThemeChooser {
+    #extraCodeSelector = '#z4m-theme-chooser-extra-code'
     #userPanelId = 'zdk-userpanel-modal'
     #appLogoSelector = '#zdk-company-logo img'
+    #bannerLogoSelector = '#zdk-header .banner img.title-logo'
     #themeButtonClass = 'choosetheme'
     #selectThemeButtonClass = 'select-theme'
     #themeChooserViewName = 'z4m_theme_chooser'
     #themeChooserModalId = 'z4m-theme-chooser'
     #themeTransitionClass = 'z4m-theme-chooser-transition'
+    #themes
+    #isAuthentDisabled = false;
+    #isAuto = false
+    #currentTheme = 'light'
+    #isDebug = false;
     constructor() {
-        if (z4m.authentication.isEnabled()
-            && !z4m.authentication.isRequired()) {
+        let logAuth = false;
+        if (z4m.authentication.isEnabled() && !z4m.authentication.isRequired()) {
+            logAuth = 'User logged in: user\'s preferred theme is applied (\'auto\', \'light\' or \'dark\').';
             this.#addDisplayButtonInUserPanel();
             this.#handleClickButtonInUserPanel();
+        } else {
+            this.#isAuthentDisabled = !z4m.authentication.isEnabled() && !z4m.authentication.isRequired();
+            logAuth = (this.#isAuthentDisabled ? 'Authentication disabled:'
+                : 'Login screen:') + ' OS or user agent preferred theme applied (\'auto\').';
+        }
+        const initialThemeName = this.#setThemeInfosFromExtraCode();
+        this.#debug(logAuth);
+        this.#debug('Initial theme is "' + initialThemeName + '".');
+        this.#currentTheme = initialThemeName === 'auto' ? 'light' : initialThemeName;
+        this.#applyTheme(initialThemeName);
+        this.#handleSystemPreferredThemeChange();
+    }
+    getCurrentThemeName() {
+        return this.#currentTheme;
+    }
+    #debug(msg, ...args) {
+        if (this.#isDebug) {
+            const consoleArgs = ['Z4M_ThemeChooser - ' + msg];
+            if (args.length > 0) {
+                consoleArgs = consoleArgs.concat(args);
+            }
+            console.log(...consoleArgs);
         }
     }
+    #triggerThemeChangeEvent(themeName) {
+        $('body').trigger('z4mthemechooserchange', themeName);
+    }
+    #setThemeInfosFromExtraCode() {
+        const extraCodeEl = $(this.#extraCodeSelector),
+            themeName = extraCodeEl.data('theme');
+        this.#themes = {
+            dark: extraCodeEl.data('dark'),
+            light: extraCodeEl.data('light')
+        };
+        this.#isDebug = extraCodeEl.data('isdebug') === 1;
+        extraCodeEl.remove();
+        return themeName;
+    }
     #addDisplayButtonInUserPanel() {
-        const myUserRightsButton = document.querySelector('#' + this.#userPanelId + ' button.myuserrights');
-        const themeButton = document.querySelector('#z4m-theme-chooser-extra-code > button'); 
+        const myUserRightsButton = $('#' + this.#userPanelId + ' button.myuserrights'),
+            themeButton = $(this.#extraCodeSelector + ' button');
         myUserRightsButton.after(themeButton);
-        document.querySelector('#z4m-theme-chooser-extra-code').remove();
     }
     #handleClickButtonInUserPanel() {
         const $this = this;
-        const themeButton = document.querySelector('#' + this.#userPanelId 
+        const themeButton = document.querySelector('#' + this.#userPanelId
                 + ' button.' + this.#themeButtonClass);
         themeButton.addEventListener('click', function(){
             $this.#showThemeChooserDialog();
+        });
+    }
+    #handleThemeNameButtonClickEvents() {
+        const $this = this;
+        $('#' + this.#themeChooserModalId).on('click.Z4M_ThemeChooser', function(event){
+            const clickedButton = event.target.closest('button');
+            if (clickedButton && clickedButton.classList.contains($this.#selectThemeButtonClass)) {
+                $this.#selectTheme(clickedButton.dataset.theme);
+            }
+        });
+    }
+    #handleSystemPreferredThemeChange() {
+        const $this = this;
+        $(window.matchMedia('(prefers-color-scheme: dark)')).on('change.Z4M_ThemeChooser', function(){
+            if ($this.#isAuto) {
+                $this.#applyTheme('auto');
+            }
         });
     }
     #showThemeChooserDialog() {
@@ -65,15 +125,7 @@ class Z4M_ThemeChooser {
             $this.#addCheckIconToThemeButtons();
             this.open();
             if (!doesModalExistInDom) {
-                this.element[0].addEventListener('click', function(event){
-                    const clickedButton = event.target.closest('button');
-                    if (clickedButton && clickedButton.classList.contains($this.#selectThemeButtonClass)) {
-                        $this.#selectTheme(clickedButton.dataset.css,
-                            clickedButton.dataset.fileversion,
-                            clickedButton.dataset.theme,
-                            clickedButton.dataset.icon);
-                    }
-                });
+                $this.#handleThemeNameButtonClickEvents();
             }
         });
     }
@@ -82,11 +134,11 @@ class Z4M_ThemeChooser {
         modal.close();
     }
     #getThemeButtons() {
-        return document.querySelectorAll('#' + this.#themeChooserModalId 
+        return document.querySelectorAll('#' + this.#themeChooserModalId
                 + ' button.' + this.#selectThemeButtonClass);
     }
     #addCheckIconToThemeButtons() {
-        const selectedThemeName = this.#getSelectedThemeLink(true);
+        const selectedThemeName = this.#isAuto ? 'auto' : this.getCurrentThemeName();
         const buttons = this.#getThemeButtons();
         for (let i = 0; i < buttons.length; ++i) {
             let button = buttons[i];
@@ -101,53 +153,89 @@ class Z4M_ThemeChooser {
             }
         }
     }
-    #getSelectedThemeLink(returnThemeName) {
-        const buttons = this.#getThemeButtons();
-        for (let i = 0; i < buttons.length; ++i) {
-            let button = buttons[i];
-            let css = button.dataset.css;
-            let themeLink = $('link[href*="' + css + '"]');
-            if (themeLink.length > 0) {
-                return returnThemeName === true ? button.dataset.theme : themeLink;
-            }
-        }
-        return false;
+    #getSelectedThemeLink() {
+        const theme = this.getCurrentThemeName(),
+            themeLink = $('link[href*="' + this.#themes[theme].css + '"]');
+        return themeLink.length > 0 ? themeLink : false;
     }
-    #getAppLogo() {
-        return $(this.#appLogoSelector);
-    }
-    #selectTheme(css, fileversion, themeName, iconPath) {
+    #selectTheme(themeName) {
         const $this = this;
         this.#storeNewThemeForUser(themeName, function(){
             $this.#closeThemeChooserDialog();
-            $this.#applyTheme(css + '?v=' + fileversion, themeName);
-            if (iconPath !== undefined) {
-                $this.#getAppLogo().attr('src', iconPath);
-            }
+            $this.#applyTheme(themeName);
         });
     }
-    #applyTheme(newThemePath, themeName, onSuccess, onError) {
-        const $this = this,
-            currentThemeLinkEl = this.#getSelectedThemeLink(),
-            newThemeLink = $('<link rel="stylesheet" type="text/css"/>');
-        newThemeLink[0].onload = function(){
-            currentThemeLinkEl.remove();
-            $this.#applyThemeTransition(false); // Transition effect end...
-            // body[data-theme] set to 'dark' or 'light' for styling purpose
-            $('body').attr('data-theme', themeName);
-            if (typeof onSuccess === 'function') {
-                onSuccess();
+    /**
+     * Sets body[data-theme] to 'dark' or 'light' for styling purpose
+     * @param {string} themeName 'dark' or 'light'.
+     */
+    #setBodyDataThemeName(themeName) {
+        this.#debug('Current theme is "' + themeName + '".');
+        $('body').attr('data-theme', themeName);
+        this.#currentTheme = themeName;
+    }
+    #getAutoThemeName() {
+        const prefersDarkScheme = window.matchMedia("(prefers-color-scheme: dark)");
+        return prefersDarkScheme.matches ? 'dark' : 'light';
+    }
+    async #setNewThemeLogo(themeName) {
+        if (this.#themes[themeName].hasOwnProperty('icon')) {
+            const $this = this, logoSelectors = [$this.#appLogoSelector, $this.#bannerLogoSelector];
+            let success = true;
+            for (const logoSelector of logoSelectors) {
+                success &&= await new Promise(function(resolve){
+                    $(logoSelector)[0].onload = function() {resolve(true);};
+                    $(logoSelector)[0].onerror = function() {resolve(false);};
+                    $(logoSelector).attr('src', $this.#themes[themeName].icon);
+                });
+                if (success) {
+                    $this.#debug('Theme logo loading succeeded for \'' + themeName + '\' theme and \'' + logoSelector + '\' element.');
+                } else {
+                    console.error('Theme logo loading failed for \'' + themeName + '\' theme and \'' + logoSelector + '\' element.');
+                }
             }
+            return success;
+        } else {
+            return false;
+        }
+    }
+    #applyTheme(themeName) {
+        this.#isAuto = themeName === 'auto';
+        if (themeName === 'auto') {
+            themeName = this.#getAutoThemeName();
+        }
+        if (this.getCurrentThemeName() === themeName) {
+            this.#setBodyDataThemeName(themeName);
+            this.#debug('The theme "' + themeName + '" is already the current theme. Nothing is done.');
+            return;
+        }
+        const currentThemeLinkEl = this.#getSelectedThemeLink();
+        if (currentThemeLinkEl === false) {
+            console.error('Z4M_ThemeChooser - Unable to retrieve the current theme URL.');
+            return;
+        }
+        const $this = this,
+            themeLinkParent = currentThemeLinkEl.parent(),
+            newThemeLink = $('<link rel="stylesheet" type="text/css"/>');
+        newThemeLink[0].onload = async function(){
+            $this.#debug('Theme "' + themeName + '" is loaded.');
+            currentThemeLinkEl.remove();
+            const logoLoading = await $this.#setNewThemeLogo(themeName);
+            if (logoLoading === true) {
+                $this.#debug('Theme\'s logos for theme "' + themeName + '" are loaded.');
+            }
+            $this.#applyThemeTransition(false); // Transition effect end...
+            $this.#setBodyDataThemeName(themeName);
+            $this.#triggerThemeChangeEvent(themeName);
         };
         newThemeLink[0].onerror = function(){
             $this.#applyThemeTransition(false); // Transition effect end...
-            if (typeof onError === 'function') {
-                onError();
-            }
         };
-        $this.#applyThemeTransition(true); // Transition effect start...
-        newThemeLink.attr('href', newThemePath);
-        currentThemeLinkEl.after(newThemeLink);
+        this.#debug('New theme to apply is "' + themeName + '".');
+        this.#applyThemeTransition(true); // Transition effect start...
+        newThemeLink.attr('href', this.#themes[themeName].css + '?v='
+                + this.#themes[themeName].fileversion);
+        themeLinkParent.append(newThemeLink);
     }
     #applyThemeTransition(start) {
         const transitionClass = this.#themeTransitionClass;
@@ -179,4 +267,3 @@ class Z4M_ThemeChooser {
         });
     }
 }
-

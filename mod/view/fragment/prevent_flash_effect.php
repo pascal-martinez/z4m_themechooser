@@ -1,9 +1,10 @@
 <?php
-/**
+
+/* 
  * ZnetDK, Starter Web Application for rapid & easy development
- * See official website https://mobile.znetdk.fr
- * Copyright (C) 2024 Pascal MARTINEZ (contact@znetdk.fr)
- * License GNU GPL https://www.gnu.org/licenses/gpl-3.0.html GNU GPL
+ * See official website https://www.znetdk.fr
+ * Copyright (C) 2025 Pascal MARTINEZ (contact@znetdk.fr)
+ * License GNU GPL http://www.gnu.org/licenses/gpl-3.0.html GNU GPL
  * --------------------------------------------------------------------
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,17 +15,20 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * --------------------------------------------------------------------
- * Theme chooser module English translations of the application
+ * ZnetDK 4 Mobile Theme Chooser module
  * 
- * File version: 1.1
- * Last update: 10/13/2025
+ * File version: 1.0
+ * Last update: 10/20/2025
  */
-
-define('MOD_Z4M_THEMECHOOSER_USER_PANEL_BUTTON_LABEL', 'Theme');
-define('MOD_Z4M_THEMECHOOSER_MODAL_AUTO_THEME_LABEL', 'Auto');
-define('MOD_Z4M_THEMECHOOSER_MODAL_LIGHT_THEME_LABEL', 'Light');
-define('MOD_Z4M_THEMECHOOSER_MODAL_DARK_THEME_LABEL', 'Dark');
-define('MOD_Z4M_THEMECHOOSER_ACTION_STORE_OK', 'Favorite theme saved.');
-define('MOD_Z4M_THEMECHOOSER_ACTION_STORE_ERROR', 'Failed to save favorite theme.');
+?>
+        <!-- Prevent flash effect -->
+        <meta name="color-scheme" content="dark light">
+        <style>
+            /* Overrides W3.CSS #fff color */
+            body .w3-modal-content,
+            body .w3-sidebar {
+                background-color: transparent;
+            }
+        </style>

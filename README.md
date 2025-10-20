@@ -1,13 +1,19 @@
 # ZnetDK 4 Module theme chooser
 Allows the ZnetDK 4 Mobile application to be displayed with a dark theme.
 
-![Screenshot of the Theme chooser UI provided by the ZnetDK 4 Mobile 'z4m_themechooser' module](https://mobile.znetdk.fr/applications/default/public/images/modules/z4m_themechooser/screenshot.png?v1)
+![Screenshot of the Theme chooser UI provided by the ZnetDK 4 Mobile 'z4m_themechooser' module](https://mobile.znetdk.fr/applications/default/public/images/modules/z4m_themechooser/screenshot.png?v12)
 
 ## FEATURES
-This module add a "Theme" button to the User Panel.    
+- This module add a "Theme" button to the User Panel.
 When clicked, a modal dialog is displayed to apply the dark theme or to come
 back to the light theme.    
-The favorite theme is saved in database for the logged in user.
+- The favorite theme is saved in database for the logged in user.   
+- The `Auto` button when selected, makes the theme selected automatically according to the selected theme at Operating System
+or Web browser level.
+- The `data-theme` attribute is added to the `body` element and is useful to know
+which theme is currently applied (`'dark'` or `'light'`).
+- The jQuery event `z4mthemechooserchange` is triggered by the HTML body element
+each time the theme has changed.
 
 ## REQUIREMENTS
 - [ZnetDK 4 Mobile](/../../../znetdk4mobile) version 3.2 or higher,
@@ -43,6 +49,34 @@ if (Users::getUserTheme() === MOD_Z4M_THEMECHOOSER_CSS_DARK_THEME) {
     define('LC_HEAD_IMG_LOGO', ZNETDK_ROOT_URI . MOD_Z4M_THEMECHOOSER_LOGO_LIGHT_THEME);
 }
 ```
+
+## AVOIDING FLASH EFFECT
+When **Auto** is selected in the Theme modal dialog and the color scheme is `dark` at OS or User Agent level,
+a white background is displayed a few milliseconds before the dark theme be applied.
+To avoid this flicker effect:
+1. Imports the [`prevent_flash_effect.php`](mod/view/fragment/prevent_flash_effect.php) script at the end
+of the `mobile_favicons.php` script specified via the [`CFG_MOBILE_FAVICON_CODE_FILENAME`](https://mobile.znetdk.fr/settings#z4m-settings-theming-favicon-code) constant.
+For example:
+```php
+<?php require 'z4m_themechooser/mod/view/fragment/prevent_flash_effect.php'; ?>
+```
+2. Next, surrounds the light theme styles by the `:root:has(body[data-theme="light"])` selector.
+For Example:
+```css
+:root:has(body[data-theme="light"]) {
+    color-scheme: light;
+    /* Other styles of the light theme... */
+    body {
+    --z4m-light-primary:#0b78d1;
+    --z4m-light-primary-txt:#fff;
+    --z4m-light-secondary:#FF9400;
+    --z4m-light-secondary-txt:#000;
+    --z4m-light:#FFF;
+    /* And so on... */
+    }
+}
+```
+3. Finally, be sure the style `color-scheme: light;` is set among the styles of the light theme.
 
 ## TRANSLATIONS
 This module is translated in **French**, **English** and **Spanish** languages.
