@@ -1,5 +1,8 @@
 # CHANGE LOG: Theme chooser (z4m_themechooser)
 
+## Version 1.3, 2025-10-21
+BUG FIXING: the border of the modal dialogs could be transparent when light theme was applied.
+
 ## Version 1.2, 2025-10-20
 CHANGE: new 'Auto' button added to the 'Theme' modal to make the light or dark
 theme applied automatically according to the Operating System or web browser

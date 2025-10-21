@@ -19,16 +19,16 @@
  * --------------------------------------------------------------------
  * ZnetDK 4 Mobile Theme Chooser module
  * 
- * File version: 1.0
- * Last update: 10/20/2025
+ * File version: 1.1
+ * Last update: 10/21/2025
  */
 ?>
         <!-- Prevent flash effect -->
         <meta name="color-scheme" content="dark light">
         <style>
             /* Overrides W3.CSS #fff color */
-            body .w3-modal-content,
-            body .w3-sidebar {
+            body:not([data-theme]) .w3-modal-content,
+            body:not([data-theme]) .w3-sidebar {
                 background-color: transparent;
             }
         </style>
